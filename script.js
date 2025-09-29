@@ -1,13 +1,4 @@
-/* Advanced WeatherPro
-   - Uses Open-Meteo for weather and air quality
-   - India-first autocomplete & search (count=20)
-   - Map view (OpenStreetMap embed)
-   - 15-day forecast + current details + AQI
-*/
 
-/* -----------------------------
-   Configuration & Globals
-   ----------------------------- */
 const GEO_BASE = "https://geocoding-api.open-meteo.com/v1/search";
 const FORECAST_BASE = "https://api.open-meteo.com/v1/forecast";
 const AIR_BASE = "https://air-quality-api.open-meteo.com/v1/air-quality";
@@ -39,9 +30,7 @@ const WEATHER_CODES = {
   95: {txt:"Thunderstorm", emoji:"⛈️"}
 };
 
-/* -----------------------------
-   Helpers
-   ----------------------------- */
+
 const $ = id => document.getElementById(id);
 const el = (tag, attrs={}, children="")=>{
   const d = document.createElement(tag);
@@ -57,18 +46,18 @@ function fmtTemp(t){
 }
 function safe(v){ return (v===null||v===undefined) ? "N/A" : v; }
 
-/* returns index in hourly.time that matches current_time */
+
 function findHourlyIndex(hourly, targetIso){
   if(!hourly || !hourly.time) return -1;
-  // exact match
+  
   let i = hourly.time.indexOf(targetIso);
   if(i>=0) return i;
-  // fallback: match date+hour prefix
-  const prefix = targetIso.slice(0,13); // YYYY-MM-DDTHH
+  
+  const prefix = targetIso.slice(0,13); 
   return hourly.time.findIndex(t => t.slice(0,13) === prefix);
 }
 
-/* build OpenStreetMap embed iframe with small bbox around lat/lon */
+
 function mapIframeFor(lat, lon, name){
   const span = 0.03;
   const left = (lon - span).toFixed(5);
@@ -79,9 +68,7 @@ function mapIframeFor(lat, lon, name){
   return `<iframe src="${src}" style="border:0;width:100%;height:100%"></iframe><div style="padding:8px;text-align:center;font-size:0.85rem;color:var(--muted)">You can open in OpenStreetMap for detailed view — <a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=12/${lat}/${lon}">Open Map</a></div>`;
 }
 
-/* -----------------------------
-   UI wiring: search box & suggestions
-   ----------------------------- */
+
 const searchInput = $("searchInput");
 const suggestionsBox = $("suggestions");
 const searchBtn = $("searchBtn");
@@ -109,21 +96,21 @@ unitsBtn.addEventListener("click", ()=>{
   if(lastLocation) loadWeather(lastLocation.lat, lastLocation.lon, lastLocation.name);
 });
 
-/* fetch suggestions: India-first, count=20 */
+
 async function fetchSuggestions(q){
   try{
     suggestionsBox.innerHTML = `<div class="loading">Searching...</div>`;
     suggestionsBox.hidden = false;
 
-    // check cache
+    
     if(cachedSuggestions[q]) { renderSuggestions(cachedSuggestions[q]); return; }
 
-    // India-first request (count=20)
+    
     let urlIndia = `${GEO_BASE}?name=${encodeURIComponent(q)}&count=20&country=IN&language=en&format=json`;
     let resp = await fetch(urlIndia).then(r=>r.ok ? r.json() : null);
     let results = (resp && resp.results) ? resp.results : [];
 
-    // If nothing in India, do a global query with count=10
+    
     if(results.length === 0){
       let urlGlobal = `${GEO_BASE}?name=${encodeURIComponent(q)}&count=10&language=en&format=json`;
       let r2 = await fetch(urlGlobal).then(r=>r.ok ? r.json() : null);
@@ -150,7 +137,7 @@ function renderSuggestions(list){
     div.addEventListener("click", ()=>{
       suggestionsBox.hidden = true;
       searchInput.value = text;
-      // call getWeather
+      
       const name = `${item.name}${item.admin1 ? ", " + item.admin1 : ""}${item.country ? ", " + item.country : ""}`;
       loadWeather(item.latitude, item.longitude, name);
     });
@@ -158,19 +145,17 @@ function renderSuggestions(list){
   });
 }
 
-/* -----------------------------
-   Search flow
-   ----------------------------- */
+
 async function doSearch(){
   const q = searchInput.value.trim();
   if(!q) return alert("Type a city (e.g. Bihar Sharif) to search.");
-  // Attempt india-first geocode but tolerant to many forms
+  
   try{
-    // try India first
+    
     let resp = await fetch(`${GEO_BASE}?name=${encodeURIComponent(q)}&count=20&country=IN&language=en&format=json`).then(r=>r.ok ? r.json() : null);
     let loc = resp && resp.results && resp.results[0];
     if(!loc){
-      // fallback global
+      
       let r2 = await fetch(`${GEO_BASE}?name=${encodeURIComponent(q)}&count=10&language=en&format=json`).then(r=>r.ok ? r.json() : null);
       loc = r2 && r2.results && r2.results[0];
     }
@@ -183,9 +168,7 @@ async function doSearch(){
   }
 }
 
-/* -----------------------------
-   Geolocation
-   ----------------------------- */
+
 function useMyLocation(){
   if(!navigator.geolocation) return alert("Geolocation not supported");
   $("mainLoading")?.remove();
@@ -208,15 +191,13 @@ function useMyLocation(){
   }, {enableHighAccuracy:true, timeout:10000});
 }
 
-/* -----------------------------
-   Main: loadWeather -> fetch APIs and render
-   ----------------------------- */
+
 async function loadWeather(lat, lon, displayName){
   lastLocation = {lat, lon, name: displayName};
   // show loading
   showMainLoading(true);
 
-  // build forecast request: daily fields; hourly for pressure/humidity; current_weather true
+  
   const dailyFields = [
     "weathercode",
     "temperature_2m_max","temperature_2m_min",
@@ -224,7 +205,7 @@ async function loadWeather(lat, lon, displayName){
     "uv_index_max","sunrise","sunset"
   ].join(",");
 
-  // hourly we will request pressure and humidity and temperature & wind for possible finer current values
+  
   const hourlyFields = ["pressure_msl","relative_humidity_2m","temperature_2m","windspeed_10m"].join(",");
 
   const forecastUrl =
@@ -253,9 +234,7 @@ async function loadWeather(lat, lon, displayName){
   }
 }
 
-/* -----------------------------
-   Rendering: current card, forecast grid, map, global
-   ----------------------------- */
+
 function showMainLoading(show){
   const currentCard = $("currentCard");
   if(show){
@@ -315,7 +294,7 @@ function renderCurrentCard(data, air, name){
   $("currentCard").innerHTML = html;
 }
 
-/* forecast grid cards clickable for details */
+
 function renderForecastGrid(data, air){
   const grid = $("forecastGrid");
   grid.innerHTML = "";
@@ -345,23 +324,21 @@ function renderForecastGrid(data, air){
         Rain: ${rain} mm • Chance: ${chance}% • UV: ${uv}
       </div>
     `;
-    // on click show modal with deeper info
+    
     card.addEventListener("click", ()=> openDayModal(i));
     card.addEventListener("keypress", (e)=>{ if(e.key==="Enter") openDayModal(i); });
     grid.appendChild(card);
   });
 }
 
-/* map rendering */
+
 function renderMap(lat, lon, name){
   const mapWrap = $("mapWrap");
   mapWrap.innerHTML = mapIframeFor(lat, lon, name);
   $("mapName").textContent = name;
 }
 
-/* -----------------------------
-   Day modal (expanded details)
-   ----------------------------- */
+
 const dayModal = $("dayModal");
 const modalClose = $("modalClose");
 modalClose.addEventListener("click", closeDayModal);
@@ -379,7 +356,7 @@ function openDayModal(dayIndex){
   const rain = d.daily.precipitation_sum?.[dayIndex] ?? 0;
   const chance = d.daily.precipitation_probability_mean?.[dayIndex] ?? "N/A";
   const uv = d.daily.uv_index_max?.[dayIndex] ?? "N/A";
-  // get air quality approximate for day using first hourly value if present
+  
   const aqi = (air && air.hourly && air.hourly.us_aqi && air.hourly.us_aqi.length>dayIndex) ? air.hourly.us_aqi[dayIndex] : (air && air.current?.us_aqi) || "N/A";
 
   const content = `
@@ -402,9 +379,7 @@ function openDayModal(dayIndex){
 
 function closeDayModal(){ dayModal.setAttribute("aria-hidden","true"); }
 
-/* -----------------------------
-   Global weather (5 cities)
-   ----------------------------- */
+
 async function getGlobalWeather(){
   const cities = [
     {name:"Delhi",lat:28.61,lon:77.21},
@@ -438,9 +413,7 @@ async function getGlobalWeather(){
   }
 }
 
-/* -----------------------------
-   init: try to load default (Delhi) on load
-   ----------------------------- */
+
 window.addEventListener("load", ()=>{
   // wire buttons that exist after DOM ready
   $("searchBtn").addEventListener("click", doSearch);
@@ -451,3 +424,4 @@ window.addEventListener("load", ()=>{
   loadWeather(28.61,77.21,"Delhi, India");
   getGlobalWeather();
 });
+
