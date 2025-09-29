@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Advanced 15-Day Weather — Deep</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>WeatherPro — 15 Day Forecast</h1>
+      <p class="muted">Current • 15-day • AQI • Global</p>
+    </div>
+
+    <div class="controls">
+      <div class="search-wrap">
+        <input id="searchInput" autocomplete="off" placeholder="Search city (India first) — e.g. Bihar Sharif" />
+        <div id="suggestions" class="suggestions" hidden></div>
+      </div>
+      <button id="searchBtn" class="btn">Search</button>
+      <button id="locBtn"   class="btn outline">Use My Location</button>
+      <button id="unitsBtn" class="btn toggle">°C</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="mainPanel" class="main-panel">
+      <div id="currentCard" class="card current-card" aria-live="polite">
+        <!-- Filled by JS -->
+        <div class="loading" id="mainLoading">Loading...</div>
+      </div>
+
+      <div id="mapCard" class="card map-card">
+        <div class="map-header">
+          <strong>Location View</strong>
+          <small id="mapName" class="muted"></small>
+        </div>
+        <div id="mapWrap" class="map-wrap">
+          <!-- iframe map inserted here -->
+          <div class="map-placeholder">Map will appear here when a location is selected</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="forecastSection" class="forecast-section">
+      <h2>15-Day Forecast</h2>
+      <div id="forecastGrid" class="forecast-grid">
+        <!-- forecast cards -->
+      </div>
+    </section>
+
+    <section id="globalSection" class="global-section card">
+      <h2>Global Weather Report</h2>
+      <div id="globalGrid" class="global-grid">
+        <!-- 5 city cards -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Day detail modal -->
+  <div id="dayModal" class="modal" aria-hidden="true">
+    <div class="modal-dialog">
+      <button class="modal-close" id="modalClose" title="Close">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <small>Data from Open-Meteo • AQI from Open-Meteo Air Quality • No API keys required</small>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

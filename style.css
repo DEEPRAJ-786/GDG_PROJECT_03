@@ -1,0 +1,79 @@
+:root{
+  --bg-1: #081226;
+  --bg-2: #123456;
+  --card: rgba(255,255,255,0.06);
+  --accent: linear-gradient(135deg,#00d2ff,#3a7bd5);
+  --glass: rgba(255,255,255,0.04);
+  --muted: rgba(255,255,255,0.7);
+  --success: #2ecc71;
+  --danger: #ff6b6b;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; color:#eef2ff}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;padding:18px 24px;gap:12px;
+}
+.brand h1{margin:0;font-size:1.15rem;letter-spacing:0.2px}
+.brand .muted{font-size:0.78rem;color:var(--muted);margin-top:2px}
+
+.controls{display:flex;align-items:center;gap:8px}
+.search-wrap{position:relative}
+#searchInput{
+  width:320px;max-width:40vw;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.03);color:inherit;font-size:0.95rem;
+}
+.suggestions{
+  position:absolute;left:0;right:0;top:44px;background:var(--card);border-radius:8px;padding:6px;box-shadow:0 12px 30px rgba(2,6,23,0.6);z-index:40;max-height:320px;overflow:auto;
+}
+.suggestion{padding:8px;border-radius:6px;cursor:pointer}
+.suggestion:hover{background:rgba(255,255,255,0.02)}
+
+.btn{padding:8px 12px;border-radius:10px;border:none;background:transparent;color:inherit;cursor:pointer;font-weight:600}
+.btn.outline{border:1px solid rgba(255,255,255,0.06);background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))}
+.btn.toggle{background:var(--accent);color:#001019;border:none;padding:8px 12px;border-radius:10px}
+
+.container{max-width:1200px;margin:18px auto;padding:12px;display:grid;grid-template-columns:1fr 360px;gap:18px}
+@media (max-width:980px){ .container{grid-template-columns:1fr; padding:8px} #searchInput{width:220px}}
+
+.card{background:var(--card);border-radius:14px;padding:14px;box-shadow:0 8px 30px rgba(0,0,0,0.4);}
+
+.main-panel{display:flex;flex-direction:column;gap:14px}
+.current-card{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.current-top{display:flex;align-items:center;gap:12px;width:100%}
+.location-name{font-weight:700;font-size:1.05rem}
+.current-temp{font-size:2.6rem;font-weight:800}
+.small-muted{color:var(--muted);font-size:0.88rem}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.extra-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;width:100%}
+@media(max-width:980px){ .extra-grid{grid-template-columns:repeat(2,1fr)} }
+
+.stat{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;text-align:center}
+.stat .label{font-size:0.8rem;color:var(--muted)}
+.stat .value{font-weight:700;margin-top:6px;font-size:1.05rem}
+
+.map-card .map-wrap, .map-wrap{height:240px;border-radius:10px;overflow:hidden;background:linear-gradient(90deg, rgba(0,0,0,0.12), rgba(255,255,255,0.02));display:flex;align-items:center;justify-content:center}
+.map-placeholder{color:var(--muted);padding:20px;text-align:center}
+
+.forecast-section{grid-column:1 / -1;margin-top:6px}
+.forecast-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:12px}
+.day-card{padding:10px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));cursor:pointer;transition:transform .18s ease, box-shadow .18s ease}
+.day-card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(0,0,0,0.45)}
+.day-card .fw{font-weight:700}
+.weather-emoji{font-size:1.6rem}
+
+.global-section{margin-top:18px;padding:12px}
+.global-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:10px}
+.city-card{padding:10px;border-radius:10px;background:rgba(255,255,255,0.03);text-align:center}
+
+.loading{padding:18px;color:var(--muted)}
+
+.footer{text-align:center;color:var(--muted);padding:12px;margin-top:14px;font-size:0.86rem}
+
+/* modal */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(3,6,15,0.6);z-index:60}
+.modal[aria-hidden="false"]{display:flex}
+.modal-dialog{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;min-width:280px;max-width:720px}
+.modal-close{position:absolute;right:18px;top:18px;background:transparent;border:none;font-size:18px;color:#fff;cursor:pointer}
+.modal-content h3{margin:0 0 8px}
