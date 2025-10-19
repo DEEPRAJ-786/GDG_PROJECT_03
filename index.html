@@ -3,71 +3,85 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Advanced 15-Day Weather — Deep</title>
+  <title>WeatherPro AI — Advanced 15-Day Forecast</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <h1>WeatherPro — 15 Day Forecast</h1>
-      <p class="muted">Current • 15-day • AQI • Global</p>
+  <header class="topbar" role="banner">
+    <div class="brand" aria-hidden="false">
+      <h1 id="appTitle">WeatherPro <span class="pro">AI</span></h1>
+      <div class="muted">15-Day Forecast • Current Weather • AQI • AI Insights</div>
     </div>
 
-    <div class="controls">
+    <div class="controls" role="search" aria-label="Search and controls">
       <div class="search-wrap">
-        <input id="searchInput" autocomplete="off" placeholder="Search city (India first) — e.g. Bihar Sharif" />
-        <div id="suggestions" class="suggestions" hidden></div>
+        <input id="searchInput" type="search" placeholder="Search city (India prioritized) — e.g. Bihar Sharif" aria-label="Search city" />
+        <div id="suggestions" class="suggestions" role="listbox" hidden></div>
       </div>
-      <button id="searchBtn" class="btn">Search</button>
-      <button id="locBtn"   class="btn outline">Use My Location</button>
-      <button id="unitsBtn" class="btn toggle">°C</button>
+
+      <button id="searchBtn" class="btn" title="Search (Enter)" aria-label="Search">Search</button>
+      <button id="locBtn" class="btn outline" title="Use my location" aria-label="Use my location">Use My Location</button>
+      <button id="unitsBtn" class="btn toggle" title="Toggle units (U)" aria-label="Toggle units">°C</button>
     </div>
   </header>
 
-  <main class="container">
-    <section id="mainPanel" class="main-panel">
-      <div id="currentCard" class="card current-card" aria-live="polite">
-        <!-- Filled by JS -->
-        <div class="loading" id="mainLoading">Loading...</div>
-      </div>
+  <main class="container" id="main" role="main">
+    <section class="main-panel">
+      <article id="currentCard" class="card current-card" aria-live="polite">
+        
+        <div id="mainLoading" class="loading">Loading default location (Delhi)...</div>
+      </article>
 
-      <div id="mapCard" class="card map-card">
+      <article id="mapCard" class="card map-card" aria-label="Map view">
         <div class="map-header">
           <strong>Location View</strong>
           <small id="mapName" class="muted"></small>
         </div>
         <div id="mapWrap" class="map-wrap">
-          <!-- iframe map inserted here -->
-          <div class="map-placeholder">Map will appear here when a location is selected</div>
+          <div class="map-placeholder">Map will appear here after selecting a location.</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="secondary-panel">
+      <div id="aiCard" class="card ai-card" aria-live="polite">
+        <div class="ai-header">
+          <strong>AI Assistant</strong>
+          <div class="muted small">Voice commands: "search Mumbai", "show forecast for Delhi"</div>
+        </div>
+        <div id="aiOutput" class="ai-output">Ask the assistant to summarize the forecast or click "Speak Summary".</div>
+        <div class="ai-controls">
+          <button id="aiSummaryBtn" class="btn outline">Explain Forecast</button>
+          <button id="aiSpeakBtn" class="btn">Speak Summary</button>
+          <button id="aiVoiceBtn" class="btn outline">Voice Command</button>
+          <button id="exportBtn" class="btn outline">Export JSON</button>
         </div>
       </div>
-    </section>
 
-    <section id="forecastSection" class="forecast-section">
-      <h2>15-Day Forecast</h2>
-      <div id="forecastGrid" class="forecast-grid">
-        <!-- forecast cards -->
+      <div id="globalCard" class="card global-card">
+        <strong>Global Weather Report</strong>
+        <div id="globalGrid" class="global-grid loading">Loading global...</div>
       </div>
     </section>
 
-    <section id="globalSection" class="global-section card">
-      <h2>Global Weather Report</h2>
-      <div id="globalGrid" class="global-grid">
-        <!-- 5 city cards -->
+    <section id="forecastSection" class="forecast-section card">
+      <h2>15-Day Forecast</h2>
+      <div id="forecastGrid" class="forecast-grid" aria-live="polite">
+        
       </div>
     </section>
   </main>
 
-  <!-- Day detail modal -->
-  <div id="dayModal" class="modal" aria-hidden="true">
+  
+  <div id="dayModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal-dialog">
-      <button class="modal-close" id="modalClose" title="Close">✕</button>
-      <div id="modalContent"></div>
+      <button id="modalClose" class="modal-close" aria-label="Close">✕</button>
+      <div id="modalContent" class="modal-content"></div>
     </div>
   </div>
 
-  <footer class="footer">
-    <small>Data from Open-Meteo • AQI from Open-Meteo Air Quality • No API keys required</small>
+  <footer class="footer" role="contentinfo">
+    <small>Data: Open-Meteo • Air Quality: Open-Meteo AQ • Map: OpenStreetMap • AI: local heuristics</small>
   </footer>
 
   <script src="script.js"></script>
